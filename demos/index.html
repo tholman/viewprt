@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+      body {
+        font-family: sans-serif;
+        color: #333;
+        padding: 2em;
+        margin: 2em;
+        border: 2em solid gray;
+      }
+      #pane {
+        height: 10rem;
+        padding: 1em;
+        border: 0.5em solid gray;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      #block {
+        background-color: gray;
+        height: 10rem;
+        padding: 1em;
+      }
+    </style>
+  </head>
+  <body>
+
+    <h1>Viewprt: Position &amp; Element Observers</h1>
+    <div id="pane"><h2>An element with overflow</h2></div>
+    <div id="content"></div>
+    <div id="block">An element</div>
+
+    <script>
+      // Demo setup: create some dummy content
+      function createDummyEl (text) {
+        var el = document.createElement('p');
+        el.appendChild(document.createTextNode(text));
+        return el
+      }
+      var content = document.getElementById('content')
+      var pane = document.getElementById('pane')
+      for (var i = 0; i < 100; i++) {
+        content.appendChild(createDummyEl(i));
+        pane.appendChild(createDummyEl(i));
+      }
+    </script>
+
+    <script src="../dist/viewprt.js"></script>
+    <script>
+      function onReachedBottom (element) {
+        element.style.borderColor = 'green';
+        console.log(element.id ? element.id : element.tagName.toLowerCase(), 'reached bottom');
+      }
+      function onReachedTop (element) {
+        element.style.borderColor = 'blue'
+        console.log(element.id ? element.id : element.tagName.toLowerCase(), 'reached top');
+      }
+
+      var windowPositionObserver = new Viewprt.ViewportPositionObserver({
+        onReachedBottom: onReachedBottom,
+        onReachedTop: onReachedTop
+      });
+
+      var panePositionObserver = new Viewprt.ViewportPositionObserver({
+        container: document.getElementById('pane'),
+        onReachedBottom: onReachedBottom,
+        onReachedTop: onReachedTop
+      });
+
+      var blockElementObserver = new Viewprt.ViewportElementObserver({
+        onEnteredViewport: function(element) {
+          element.style.backgroundColor = 'green'
+          console.log('element entered viewport');
+        }
+      })
+
+      windowPositionObserver.start();
+      panePositionObserver.start();
+      blockElementObserver.addElement(document.getElementById('block'));
+    </script>
+  </body>
+</html>
