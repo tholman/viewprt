@@ -102,7 +102,7 @@
 
     if (element) {
       var rect = element.getBoundingClientRect();
-      return rect.bottom > 0 - offset && rect.right > 0 - offset && rect.left < viewportWidth + offset && rect.top < viewportHeight + offset;
+      return !!(rect.width && rect.height) && rect.bottom > 0 - offset && rect.right > 0 - offset && rect.left < viewportWidth + offset && rect.top < viewportHeight + offset;
     }
     return false;
   }
