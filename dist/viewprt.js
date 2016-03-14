@@ -57,9 +57,11 @@
   }
 
   function toggleEventListeners(handler, container, add) {
-    var method = add ? 'addEventListener' : 'removeEventListener';
-    win[method]('resize', handler);
-    container[method]('scroll', handler);
+    if (win) {
+      var method = add ? 'addEventListener' : 'removeEventListener';
+      win[method]('resize', handler);
+      container[method]('scroll', handler);
+    }
   }
 
   var ViewportObserver = function () {
@@ -78,6 +80,7 @@
         toggleEventListeners(this.throttledProcess, this.container, true);
         this.isObserving = true;
       }
+      return this;
     };
 
     ViewportObserver.prototype.stop = function stop() {

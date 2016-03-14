@@ -28,4 +28,9 @@ describe('Viewprt', function () {
     obsrvr = new ViewportObserver({ offset: null })
     assert.equal(obsrvr.offset, 0)
   })
+
+  it('returns instance when calling start()', () => {
+    let obsrvr = new ViewportObserver().start()
+    assert.ok(obsrvr instanceof ViewportObserver)
+  })
 })
