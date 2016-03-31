@@ -39,7 +39,7 @@
   babelHelpers;
 
   var win = typeof window !== 'undefined' && window;
-  var rAF = win && (requestAnimationFrame || function (callback) {
+  var rAF = win && (win.requestAnimationFrame || function (callback) {
     setTimeout(callback, 1000 / 60);
   });
 
