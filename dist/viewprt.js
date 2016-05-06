@@ -122,12 +122,17 @@
       return _this;
     }
 
-    ViewportElementObserver.prototype.addElement = function addElement(element) {
+    ViewportElementObserver.prototype.add = function add(item) {
+      var element = item && item.element || item;
+      if (!(element instanceof Element)) {
+        throw new Error('Add an `Element` or object with an `element` property');
+      }
+
       if (isElementInViewport(element, this.offset)) {
-        this.onEnteredViewport(element);
+        this.onEnteredViewport(item);
       } else {
         var id = '' + this._guid++;
-        this._queue[id] = element;
+        this._queue[id] = item;
         this.start();
         return id;
       }
@@ -148,13 +153,15 @@
       var viewportWidth = window.innerWidth;
       var viewportHeight = window.innerHeight;
       var id = void 0,
+          item = void 0,
           element = void 0;
 
       for (id in queue) {
         if (queue.hasOwnProperty(id)) {
-          element = queue[id];
+          item = queue[id];
+          element = item.element || item;
           if (isElementInViewport(element, this.offset, viewportWidth, viewportHeight)) {
-            this.onEnteredViewport(element);
+            this.onEnteredViewport(item);
             this.removeById(id);
           }
         }

@@ -12,16 +12,17 @@
         border: 2em solid gray;
       }
       #pane {
-        height: 10rem;
+        height: 10em;
         padding: 1em;
         border: 0.5em solid gray;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
       }
-      #block {
+      .block {
         background-color: gray;
-        height: 10rem;
+        height: 10em;
         padding: 1em;
+        margin: 1em;
       }
     </style>
   </head>
@@ -30,7 +31,8 @@
     <h1>Viewprt: Position &amp; Element Observers</h1>
     <div id="pane"><h2>An element with overflow</h2></div>
     <div id="content"></div>
-    <div id="block">An element</div>
+    <div id="block1" class="block">An element</div>
+    <div id="block2" class="block">An element with metadata</div>
 
     <script>
       // Demo setup: create some dummy content
@@ -70,15 +72,17 @@
       });
 
       var blockElementObserver = new Viewprt.ViewportElementObserver({
-        onEnteredViewport: function(element) {
+        onEnteredViewport: function(item) {
+          var element = item.element || item
           element.style.backgroundColor = 'green'
-          console.log('element entered viewport');
+          console.log('Entered viewport', item);
         }
       })
 
       windowPositionObserver.start();
       panePositionObserver.start();
-      blockElementObserver.addElement(document.getElementById('block'));
+      blockElementObserver.add(document.getElementById('block1'));
+      blockElementObserver.add({ foo: 'bar', element: document.getElementById('block2') });
     </script>
   </body>
 </html>
