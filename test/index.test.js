@@ -51,9 +51,21 @@ test('can add element to queue directly or with metadata', assert => {
 
 test('auto start/stop observing based on having elements in queue', assert => {
   const obsrvr = new ViewportElementObserver()
-  const id1 = obsrvr.add(document.createElement('div'))
+  const id = obsrvr.add(document.createElement('div'))
   assert.is(obsrvr.isObserving, true)
 
-  obsrvr.removeById(id1)
+  obsrvr.removeById(id)
+  assert.is(obsrvr.isObserving, false)
+})
+
+test('auto dequeue if element is no longer in dom', assert => {
+  const obsrvr = new ViewportElementObserver()
+  const element = document.createElement('div')
+  document.body.appendChild(element)
+  obsrvr.add(element)
+  assert.is(obsrvr.isObserving, true)
+
+  document.body.removeChild(element)
+  obsrvr.process()
   assert.is(obsrvr.isObserving, false)
 })
