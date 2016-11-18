@@ -5,7 +5,7 @@
   "author": "Garth Poitras <garth22@gmail.com>",
   "license": "MIT",
   "main": "dist/viewprt.js",
-  "jsnext:main": "index.js",
+  "module": "index.js",
   "keywords": [
     "viewport",
     "observer",
