@@ -1,71 +1,172 @@
-import test from 'ava'
-import { ViewportObserver, ViewportPositionObserver, ViewportElementObserver } from '../dist/viewprt'
+const assert = require('assert')
+const rewire = require('rewire')
 
-test('can create instances', assert => {
-  const obsrvr = new ViewportObserver()
-  const posObsrvr = new ViewportPositionObserver()
-  const elObsrvr = new ViewportElementObserver()
+const viewprt = rewire('../dist/viewprt.test.js')
+const { PositionObserver, ElementObserver } = viewprt
+const getViewports = viewprt.__get__('getViewports')
+const resetViewports = viewprt.__get__('resetViewports')
 
-  assert.true(obsrvr instanceof ViewportObserver)
-  assert.true(posObsrvr instanceof ViewportObserver)
-  assert.true(elObsrvr instanceof ViewportObserver)
-  assert.true(posObsrvr instanceof ViewportPositionObserver)
-  assert.true(elObsrvr instanceof ViewportElementObserver)
-})
+describe('viewprt', () => {
+  afterEach(() => {
+    resetViewports()
+  })
 
-test('returns instance when calling start()', assert => {
-  const obsrvr = new ViewportObserver().start()
-  assert.true(obsrvr instanceof ViewportObserver)
-})
+  describe('Observers', () => {
+    it('resolves the offest option', () => {
+      let observer = new PositionObserver()
+      assert.equal(observer.offset, 0)
 
-test('can set offset option', assert => {
-  let obsrvr = new ViewportObserver({ offset: 100 })
-  assert.is(obsrvr.offset, 100)
+      observer = new PositionObserver({ offset: 100 })
+      assert.equal(observer.offset, 100)
 
-  obsrvr = new ViewportObserver({ offset: -100 })
-  assert.is(obsrvr.offset, -100)
+      observer = new PositionObserver({ offset: -100 })
+      assert.equal(observer.offset, -100)
 
-  obsrvr = new ViewportObserver({ offset: '100' })
-  assert.is(obsrvr.offset, 100)
+      observer = new PositionObserver({ offset: '100' })
+      assert.equal(observer.offset, 100)
 
-  obsrvr = new ViewportObserver({ offset: null })
-  assert.is(obsrvr.offset, 0)
-})
+      observer = new PositionObserver({ offset: null })
+      assert.equal(observer.offset, 0)
 
-test('defaults to window if no container option provided', assert => {
-  const obsrvr = new ViewportObserver()
-  assert.is(obsrvr.container, window)
-})
+      observer = new PositionObserver({ offset: 'abc' })
+      assert.equal(observer.offset, 0)
+    })
 
-test('can add element to queue directly or with metadata', assert => {
-  const obsrvr = new ViewportElementObserver()
-  const element = document.createElement('div')
-  obsrvr.add(element)
-  assert.is(Object.keys(obsrvr._queue).length, 1)
+    it('resolves the container option', () => {
+      let observer = new PositionObserver()
+      assert.equal(observer.container, document.body)
+      let container = document.createElement('div')
 
-  obsrvr.add({ foo: 'bar', element: element })
-  assert.is(Object.keys(obsrvr._queue).length, 2)
+      observer = new PositionObserver({ container })
+      assert.equal(observer.container, container)
+    })
 
-  assert.throws(() => obsrvr.add({ foo: 'bar' }))
-})
+    it('resolves the once option', () => {
+      let observer = new PositionObserver()
+      assert.equal(observer.once, false)
 
-test('auto start/stop observing based on having elements in queue', assert => {
-  const obsrvr = new ViewportElementObserver()
-  const id = obsrvr.add(document.createElement('div'))
-  assert.is(obsrvr.isObserving, true)
+      observer = new PositionObserver({ once: true })
+      assert.equal(observer.once, true)
 
-  obsrvr.removeById(id)
-  assert.is(obsrvr.isObserving, false)
-})
+      observer = new PositionObserver({ once: 0 })
+      assert.equal(observer.once, false)
 
-test('auto dequeue if element is no longer in dom', assert => {
-  const obsrvr = new ViewportElementObserver()
-  const element = document.createElement('div')
-  document.body.appendChild(element)
-  obsrvr.add(element)
-  assert.is(obsrvr.isObserving, true)
+      observer = new PositionObserver({ once: null })
+      assert.equal(observer.once, false)
+    })
+  })
 
-  document.body.removeChild(element)
-  obsrvr.process()
-  assert.is(obsrvr.isObserving, false)
+  describe('PositionObserver', () => {
+    it('can create instances', () => {
+      let observer = new PositionObserver()
+      assert.ok(observer instanceof PositionObserver)
+    })
+
+    it('auto activates', () => {
+      let observer = new PositionObserver()
+      assert.equal(getViewports().length, 1)
+      assert.equal(getViewports()[0].observers.length, 1)
+      assert.equal(getViewports()[0].observers[0], observer)
+
+      observer = new PositionObserver()
+      assert.equal(getViewports().length, 1)
+      assert.equal(getViewports()[0].observers.length, 2)
+      assert.equal(getViewports()[0].observers[1], observer)
+
+      observer = new PositionObserver({ container: document.createElement('div') })
+      assert.equal(getViewports().length, 2)
+      assert.equal(getViewports()[1].observers.length, 1)
+      assert.equal(getViewports()[1].observers[0], observer)
+    })
+
+    it('can (re)activate', () => {
+      let observer = new PositionObserver()
+      assert.equal(getViewports().length, 1)
+      assert.equal(getViewports()[0].observers.length, 1)
+
+      observer.activate() // doesn't do anything. already activated
+      assert.equal(getViewports().length, 1)
+      assert.equal(getViewports()[0].observers.length, 1)
+
+      observer.destroy()
+      assert.equal(getViewports().length, 0)
+      observer.activate() // re-activated
+      assert.equal(getViewports().length, 1)
+      assert.equal(getViewports()[0].observers.length, 1)
+    })
+
+    it('can destroy', () => {
+      let observer = new PositionObserver()
+      assert.equal(getViewports().length, 1)
+      assert.equal(getViewports()[0].observers.length, 1)
+      observer.destroy()
+      assert.equal(getViewports().length, 0)
+
+      observer.destroy() // destroying again doesn't throw
+      assert.equal(getViewports().length, 0)
+      assert.ok(observer) // still an instance, just not processed
+    })
+  })
+
+  describe('ElementObserver', () => {
+    it('can create instances', () => {
+      let observer = new ElementObserver()
+      assert.ok(observer instanceof ElementObserver)
+    })
+
+    it('auto activates (if element exists and in DOM)', () => {
+      let observer = new ElementObserver()
+      assert.equal(getViewports().length, 0)
+
+      let div = document.createElement('div')
+      observer = new ElementObserver(div)
+      assert.equal(getViewports().length, 0)
+
+      document.body.appendChild(div)
+      observer = new ElementObserver(div)
+      assert.equal(getViewports().length, 1)
+      assert.equal(getViewports()[0].observers.length, 1)
+      assert.equal(getViewports()[0].observers[0], observer)
+    })
+
+    it('can (re)activate', () => {
+      let div = document.createElement('div')
+      let observer = new ElementObserver(div)
+      assert.equal(getViewports().length, 0)
+
+      document.body.appendChild(div)
+      observer.activate()
+      assert.equal(getViewports().length, 1)
+      assert.equal(getViewports()[0].observers.length, 1)
+      assert.equal(getViewports()[0].observers[0], observer)
+    })
+
+    it('auto destroys if no longer DOM', () => {
+      let div = document.createElement('div')
+      document.body.appendChild(div)
+      let observer = new ElementObserver(div)
+
+      assert.equal(getViewports().length, 1)
+      assert.equal(getViewports()[0].observers.length, 1)
+      assert.equal(getViewports()[0].observers[0], observer)
+
+      document.body.removeChild(div)
+      getViewports()[0].checkObservers()
+      assert.equal(getViewports().length, 0)
+    })
+
+    it('can destroy', () => {
+      let div = document.createElement('div')
+      document.body.appendChild(div)
+      let observer = new ElementObserver(div)
+      assert.equal(getViewports().length, 1)
+      assert.equal(getViewports()[0].observers.length, 1)
+
+      observer.destroy()
+      assert.equal(getViewports().length, 0)
+      observer.destroy() // destroying again doesn't throw
+      assert.equal(getViewports().length, 0)
+      assert.ok(observer) // still an instance, just not processed
+    })
+  })
 })

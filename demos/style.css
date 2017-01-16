@@ -1,0 +1,23 @@
+body {
+  font-family: sans-serif;
+  color: #333;
+  padding: 2em;
+  margin: 2em;
+  border: 2em solid gray;
+}
+
+#pane {
+  height: 10em;
+  padding: 1em;
+  border: 0.5em solid gray;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.block {
+  background: gray;
+  height: 10em;
+  padding: 1em;
+  margin: 1em;
+  transition: background 0.4s;
+}
