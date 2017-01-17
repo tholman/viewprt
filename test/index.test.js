@@ -13,45 +13,45 @@ describe('viewprt', () => {
 
   describe('Observers', () => {
     it('resolves the offest option', () => {
-      let observer = new PositionObserver()
+      let observer = PositionObserver()
       assert.equal(observer.offset, 0)
 
-      observer = new PositionObserver({ offset: 100 })
+      observer = PositionObserver({ offset: 100 })
       assert.equal(observer.offset, 100)
 
-      observer = new PositionObserver({ offset: -100 })
+      observer = PositionObserver({ offset: -100 })
       assert.equal(observer.offset, -100)
 
-      observer = new PositionObserver({ offset: '100' })
+      observer = PositionObserver({ offset: '100' })
       assert.equal(observer.offset, 100)
 
-      observer = new PositionObserver({ offset: null })
+      observer = PositionObserver({ offset: null })
       assert.equal(observer.offset, 0)
 
-      observer = new PositionObserver({ offset: 'abc' })
+      observer = PositionObserver({ offset: 'abc' })
       assert.equal(observer.offset, 0)
     })
 
     it('resolves the container option', () => {
-      let observer = new PositionObserver()
+      let observer = PositionObserver()
       assert.equal(observer.container, document.body)
       let container = document.createElement('div')
 
-      observer = new PositionObserver({ container })
+      observer = PositionObserver({ container })
       assert.equal(observer.container, container)
     })
 
     it('resolves the once option', () => {
-      let observer = new PositionObserver()
+      let observer = PositionObserver()
       assert.equal(observer.once, false)
 
-      observer = new PositionObserver({ once: true })
+      observer = PositionObserver({ once: true })
       assert.equal(observer.once, true)
 
-      observer = new PositionObserver({ once: 0 })
+      observer = PositionObserver({ once: 0 })
       assert.equal(observer.once, false)
 
-      observer = new PositionObserver({ once: null })
+      observer = PositionObserver({ once: null })
       assert.equal(observer.once, false)
     })
   })
@@ -60,27 +60,30 @@ describe('viewprt', () => {
     it('can create instances', () => {
       let observer = new PositionObserver()
       assert.ok(observer instanceof PositionObserver)
+
+      observer = PositionObserver()
+      assert.ok(observer instanceof PositionObserver)
     })
 
     it('auto activates', () => {
-      let observer = new PositionObserver()
+      let observer = PositionObserver()
       assert.equal(getViewports().length, 1)
       assert.equal(getViewports()[0].observers.length, 1)
       assert.equal(getViewports()[0].observers[0], observer)
 
-      observer = new PositionObserver()
+      observer = PositionObserver()
       assert.equal(getViewports().length, 1)
       assert.equal(getViewports()[0].observers.length, 2)
       assert.equal(getViewports()[0].observers[1], observer)
 
-      observer = new PositionObserver({ container: document.createElement('div') })
+      observer = PositionObserver({ container: document.createElement('div') })
       assert.equal(getViewports().length, 2)
       assert.equal(getViewports()[1].observers.length, 1)
       assert.equal(getViewports()[1].observers[0], observer)
     })
 
     it('can (re)activate', () => {
-      let observer = new PositionObserver()
+      let observer = PositionObserver()
       assert.equal(getViewports().length, 1)
       assert.equal(getViewports()[0].observers.length, 1)
 
@@ -96,7 +99,7 @@ describe('viewprt', () => {
     })
 
     it('can destroy', () => {
-      let observer = new PositionObserver()
+      let observer = PositionObserver()
       assert.equal(getViewports().length, 1)
       assert.equal(getViewports()[0].observers.length, 1)
       observer.destroy()
@@ -112,18 +115,21 @@ describe('viewprt', () => {
     it('can create instances', () => {
       let observer = new ElementObserver()
       assert.ok(observer instanceof ElementObserver)
+
+      observer = ElementObserver()
+      assert.ok(observer instanceof ElementObserver)
     })
 
     it('auto activates (if element exists and in DOM)', () => {
-      let observer = new ElementObserver()
+      let observer = ElementObserver()
       assert.equal(getViewports().length, 0)
 
       let div = document.createElement('div')
-      observer = new ElementObserver(div)
+      observer = ElementObserver(div)
       assert.equal(getViewports().length, 0)
 
       document.body.appendChild(div)
-      observer = new ElementObserver(div)
+      observer = ElementObserver(div)
       assert.equal(getViewports().length, 1)
       assert.equal(getViewports()[0].observers.length, 1)
       assert.equal(getViewports()[0].observers[0], observer)
@@ -131,7 +137,7 @@ describe('viewprt', () => {
 
     it('can (re)activate', () => {
       let div = document.createElement('div')
-      let observer = new ElementObserver(div)
+      let observer = ElementObserver(div)
       assert.equal(getViewports().length, 0)
 
       document.body.appendChild(div)
@@ -144,7 +150,7 @@ describe('viewprt', () => {
     it('auto destroys if no longer DOM', () => {
       let div = document.createElement('div')
       document.body.appendChild(div)
-      let observer = new ElementObserver(div)
+      let observer = ElementObserver(div)
 
       assert.equal(getViewports().length, 1)
       assert.equal(getViewports()[0].observers.length, 1)
@@ -158,7 +164,7 @@ describe('viewprt', () => {
     it('can destroy', () => {
       let div = document.createElement('div')
       document.body.appendChild(div)
-      let observer = new ElementObserver(div)
+      let observer = ElementObserver(div)
       assert.equal(getViewports().length, 1)
       assert.equal(getViewports()[0].observers.length, 1)
 

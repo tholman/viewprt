@@ -1,6 +1,10 @@
 import { Observer, ObserverInterface } from './observer-interface'
 
-const PositionObserver = ObserverInterface(function (opts = {}) {
+const PositionObserver = ObserverInterface(function PositionObserver (opts = {}) {
+  if (!(this instanceof PositionObserver)) {
+    return new PositionObserver(...arguments)
+  }
+
   this.onTop = opts.onTop
   this.onBottom = opts.onBottom
   this._wasTop = this._wasBottom = this._wasLeft = this._wasRight = true

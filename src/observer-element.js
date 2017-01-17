@@ -9,7 +9,11 @@ function isElementInViewport (element, offset, viewportHeight, viewportWidth) {
          rect.right > 0 - offset
 }
 
-const ElementObserver = ObserverInterface(function (element, opts = {}) {
+const ElementObserver = ObserverInterface(function ElementObserver (element, opts = {}) {
+  if (!(this instanceof ElementObserver)) {
+    return new ElementObserver(...arguments)
+  }
+
   this.element = element
   this.onEnter = opts.onEnter
   this.onExit = opts.onExit

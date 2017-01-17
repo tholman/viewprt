@@ -18,7 +18,7 @@ import { PositionObserver, ElementObserver } from 'viewprt'
 const element = document.getElementById('element')
 
 // Observe when an element enters and exits the viewport:
-const elementObserver = new ElementObserver(element, {
+const elementObserver = ElementObserver(element, {
   // options (defaults)
   container: document.body, // the viewport container element
   offset: 0,                // offset from the edge of the viewport in pixels
@@ -28,7 +28,7 @@ const elementObserver = new ElementObserver(element, {
 })
 
 // Observe when the viewport reaches its bounds:
-const positionObserver = new PositionObserver({
+const positionObserver = PositionObserver({
   // options (defaults)
   container: document.body, // the viewport container element
   offset: 0,                // offset from the edge of the viewport in pixels

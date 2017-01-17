@@ -49,7 +49,13 @@
       addDummyContentTo(document.getElementById('content2'))
     </script>
 
+    <!-- 
+      Use the published version so this works remotely,
+      but override with local build if available, for testing purposes.
+    -->
+    <script src="https://unpkg.com/viewprt"></script>
     <script src="../dist/viewprt.js"></script>
+
     <script>
       var PositionObserver = Viewprt.PositionObserver
       var ElementObserver = Viewprt.ElementObserver
@@ -66,19 +72,19 @@
       }
 
       // Observe body position
-      var bodyPosObserver = new PositionObserver({
+      var bodyPosObserver = PositionObserver({
         onBottom: onBottom,
         onTop: onTop
       })
 
       // Observe div position
-      var panePosObserver = new PositionObserver({
+      var panePosObserver = PositionObserver({
         container: document.getElementById('pane'),
         onBottom: onBottom,
         onTop: onTop
       })
 
-      var elementObserver = new ElementObserver(document.getElementById('block1'), {
+      var elementObserver = ElementObserver(document.getElementById('block1'), {
         onEnter: function (element) {
           element.style.backgroundColor = green
           console.log('Entered viewport')
