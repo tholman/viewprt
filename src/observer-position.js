@@ -11,10 +11,11 @@ const PositionObserver = ObserverInterface(function PositionObserver (opts = {})
   Observer.call(this, opts)
 })
 
-PositionObserver.prototype.check = function (viewportHeight, viewportWidth, viewportYPos) {
+PositionObserver.prototype.check = function (viewportState) {
   const { onBottom, onTop, _wasTop, _wasBottom, container, offset, once } = this
-  const atTop = viewportYPos - offset <= 0
-  const atBottom = viewportHeight + viewportYPos + offset >= container.scrollHeight
+  const { h, y } = viewportState
+  const atTop = y - offset <= 0
+  const atBottom = h + y + offset >= container.scrollHeight
 
   if (onBottom && !_wasBottom && atBottom) {
     onBottom.call(this, container)

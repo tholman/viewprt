@@ -39,14 +39,19 @@ Viewport.prototype = {
     index > -1 && observers.splice(index, 1)
   },
   checkObservers () {
-    const { observers, element } = this
-    const isWindow = element === window
-    const viewportHeight = isWindow ? element.innerHeight : element.offsetHeight
-    const viewportWidth = isWindow ? element.innerWidth : element.offsetWidth
-    const viewportYPos = isWindow ? element.pageYOffset : element.scrollTop
-
+    const { observers } = this
+    const state = this.getState()
     for (let i = observers.length; i--;) {
-      observers[i].check(viewportHeight, viewportWidth, viewportYPos)
+      observers[i].check(state)
+    }
+  },
+  getState () {
+    const { element } = this
+    const isWindow = element === window
+    return {
+      w: isWindow ? element.innerWidth : element.offsetWidth,
+      h: isWindow ? element.innerHeight : element.offsetHeight,
+      y: isWindow ? element.pageYOffset : element.scrollTop
     }
   },
   destroy () {

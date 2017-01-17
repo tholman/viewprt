@@ -9,7 +9,6 @@ export function Observer (opts) {
   this.container = opts.container || document.body
   this.once = Boolean(opts.once)
   this.activate()
-  this.check()
 }
 
 Observer.prototype = {
@@ -18,8 +17,7 @@ Observer.prototype = {
   },
   destroy () {
     removeViewportObserver(this)
-  },
-  check () {} // must implement
+  }
 }
 
 export function ObserverInterface (Subclass) {

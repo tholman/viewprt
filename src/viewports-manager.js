@@ -19,6 +19,7 @@ export function addViewportObserver (observer) {
   }
 
   viewport.addObserver(observer)
+  observer.check(viewport.getState())
 }
 
 export function removeViewportObserver (observer) {
