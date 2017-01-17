@@ -2,87 +2,92 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <title>Viewprt</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <style>
-      body {
-        font-family: sans-serif;
-        color: #333;
-        padding: 2em;
-        margin: 2em;
-        border: 2em solid gray;
-      }
-      #pane {
-        height: 10em;
-        padding: 1em;
-        border: 0.5em solid gray;
-        overflow: auto;
-        -webkit-overflow-scrolling: touch;
-      }
-      .block {
-        background-color: gray;
-        height: 10em;
-        padding: 1em;
-        margin: 1em;
-      }
-    </style>
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
-
-    <h1>Viewprt: Position &amp; Element Observers</h1>
-    <div id="pane"><h2>An element with overflow</h2></div>
+    <h1>
+      Viewprt (PositionObserver: body)
+      <button onclick="bodyPosObserver.destroy()">Destroy</button>
+      <button onclick="bodyPosObserver.activate()">Activate</button>
+    </h1>
+    <div id="pane">
+      <h3>
+        An container with overflow
+        <button onclick="panePosObserver.destroy()">Destroy</button>
+        <button onclick="panePosObserver.activate()">Activate</button>
+      </h3>
+    </div>
     <div id="content"></div>
-    <div id="block1" class="block">An element</div>
-    <div id="block2" class="block">An element with metadata</div>
+    <div id="block1" class="block">
+      <h3>
+        An element
+        <button onclick="addDummyContentTo(document.getElementById('content'), 100)">Move</button>
+        <button onclick="elementObserver.destroy()">Destroy</button>
+        <button onclick="elementObserver.activate()">Activate</button>
+      </h3>
+    </div>
+    <div id="content2"></div>
 
     <script>
       // Demo setup: create some dummy content
       function createDummyEl (text) {
-        var el = document.createElement('p');
-        el.appendChild(document.createTextNode(text));
+        var el = document.createElement('p')
+        el.appendChild(document.createTextNode(text))
         return el
       }
-      var content = document.getElementById('content')
-      var pane = document.getElementById('pane')
-      for (var i = 0; i < 100; i++) {
-        content.appendChild(createDummyEl(i));
-        pane.appendChild(createDummyEl(i));
+
+      function addDummyContentTo (el, count) {
+        for (var i = 0; i < 30; i++) {
+          el.appendChild(createDummyEl(i))
+        }
       }
+
+      addDummyContentTo(document.getElementById('content'))
+      addDummyContentTo(document.getElementById('pane'))
+      addDummyContentTo(document.getElementById('content2'))
     </script>
 
     <script src="../dist/viewprt.js"></script>
     <script>
-      function onReachedBottom (element) {
-        element.style.borderColor = 'green';
-        console.log(element.id ? element.id : element.tagName.toLowerCase(), 'reached bottom');
+      var PositionObserver = Viewprt.PositionObserver
+      var ElementObserver = Viewprt.ElementObserver
+      var blue = '#42A5F5'
+      var green = '#66BB6A'
+
+      function onBottom (element) {
+        element.style.borderColor = green
+        console.log(element.id ? element.id : element.tagName.toLowerCase(), 'reached bottom')
       }
-      function onReachedTop (element) {
-        element.style.borderColor = 'blue'
-        console.log(element.id ? element.id : element.tagName.toLowerCase(), 'reached top');
+      function onTop (element) {
+        element.style.borderColor = blue
+        console.log(element.id ? element.id : element.tagName.toLowerCase(), 'reached top')
       }
 
-      var windowPositionObserver = new Viewprt.ViewportPositionObserver({
-        onReachedBottom: onReachedBottom,
-        onReachedTop: onReachedTop
-      });
-
-      var panePositionObserver = new Viewprt.ViewportPositionObserver({
-        container: document.getElementById('pane'),
-        onReachedBottom: onReachedBottom,
-        onReachedTop: onReachedTop
-      });
-
-      var blockElementObserver = new Viewprt.ViewportElementObserver({
-        onEnteredViewport: function(item) {
-          var element = item.element || item
-          element.style.backgroundColor = 'green'
-          console.log('Entered viewport', item);
-        }
+      // Observe body position
+      var bodyPosObserver = new PositionObserver({
+        onBottom: onBottom,
+        onTop: onTop
       })
 
-      windowPositionObserver.start();
-      panePositionObserver.start();
-      blockElementObserver.add(document.getElementById('block1'));
-      blockElementObserver.add({ foo: 'bar', element: document.getElementById('block2') });
+      // Observe div position
+      var panePosObserver = new PositionObserver({
+        container: document.getElementById('pane'),
+        onBottom: onBottom,
+        onTop: onTop
+      })
+
+      var elementObserver = new ElementObserver(document.getElementById('block1'), {
+        onEnter: function (element) {
+          element.style.backgroundColor = green
+          console.log('Entered viewport')
+        },
+        onExit: function (element) {
+          element.style.backgroundColor = blue
+          console.log('Exited viewport')
+        }
+      })
     </script>
   </body>
 </html>

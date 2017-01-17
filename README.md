@@ -1,54 +1,57 @@
 # viewprt [![Build Status](https://travis-ci.org/gdub22/viewprt.svg)](https://travis-ci.org/gdub22/viewprt)
 
-A tiny vanilla viewport obsevation tool.  You can observe when elements enter the viewport, or when the viewport itself is scrolled to the bottom or top.  Use this as a building block to build things such as lazy image loaders, infinite scrollers, etc.
+A tiny, high performance viewport position & intersection obsevation tool.  You can watch when elements enter & exit the viewport, or when the viewport itself is at the bottom or top.  Use this as a building block for things such as lazy loaders, infinite scrollers, etc.
 
 ### [Demo](https://rawgit.com/gdub22/viewprt/master/demos/index.html)
 
-### API
-Elements:
-```js
-import { ViewportElementObserver } from 'viewprt'
+### Install
+```bash
+yarn add viewprt
+```
 
-var observer = new ViewportElementObserver({
-  offset: 300,                          // offset in pixels from top, right, bottom, left
-  onEnteredViewport: function (item) {  // callback triggered when item enters viewport
-    console.log('Entered viewport!', item) 
-  }
+### API
+Create new observers and any time its container is scrolled, resized, or mutated, the appropriate callbacks will be triggered when the condition is met.
+
+```js
+import { PositionObserver, ElementObserver } from 'viewprt'
+
+const element = document.getElementById('element')
+
+// Observe when an element enters and exits the viewport:
+const elementObserver = new ElementObserver(element, {
+  // options (defaults)
+  container: document.body, // the viewport container element
+  offset: 0,                // offset from the edge of the viewport in pixels
+  once: false,              // if true, observer is detroyed after first callback is triggered
+  onEnter (element) {},     // callback when the element enters the viewport
+  onExit (element) {}       // callback when the element exits the viewport
 })
 
-// Add an element to observe
-var element = document.getElementById('some-element')
-observer.add(element)
+// Observe when the viewport reaches its bounds:
+const positionObserver = new PositionObserver({
+  // options (defaults)
+  container: document.body, // the viewport container element
+  offset: 0,                // offset from the edge of the viewport in pixels
+  once: false,              // if true, observer is detroyed after first callback is triggered
+  onBottom (container) {},  // callback when the viewport reaches the bottom
+  onTop (container) {}      // callback when the viewport reaches the top
+})
 
-// Or add an arbitrary object, with an `element` property
-observer.add({ foo: 'bar', element: element })
+// Stop observing:
+positionObserver.destroy()
+elementObserver.destroy() // This happens automatically if the element is removed from DOM
 
-// Observation will automatically start when the first element is added and stop when there are no more elements in the queue left to enter the viewport.
-// You can manually stop via `observer.stop()`
+// Start observing again:
+positionObserver.activate()
+elementObserver.activate()
 ```
-
-Position:
-```js
-import { ViewportPositionObserver } from 'viewprt'
-
-var observer = new ViewportPositionObserver({
-  container: document.getElementById('some-scrollable-element'), // defaults to `window`
-  offset: 300,                    // offset in pixels from top, right, bottom, left
-  onReachedBottom: function() {}, // callback triggered when item is scrolled to bottom
-  onReachedTop: function() {}     // callback triggered when item is scrolled to top
-});
-
-observer.start() // start observing
-observer.stop()  // stop observing
-```
-
 
 ## Build
-```shell
-npm run build
+```bash
+yarn build
 ```
 
 ## Test
-```shell
-npm test
+```bash
+yarn test
 ```
