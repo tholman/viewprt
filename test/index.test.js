@@ -89,7 +89,7 @@ describe('viewprt', () => {
       assert.ok(observer instanceof PositionObserver)
     })
 
-    it('auto activates', () => {
+    it('reuses the same viewport if containers are the same', () => {
       let observer = PositionObserver()
       assert.equal(getViewports().length, 1)
       assert.equal(getViewports()[0].observers.length, 1)
@@ -99,6 +99,24 @@ describe('viewprt', () => {
       assert.equal(getViewports().length, 1)
       assert.equal(getViewports()[0].observers.length, 2)
       assert.equal(getViewports()[0].observers[1], observer)
+
+      let container = document.createElement('div')
+      observer = PositionObserver({ container })
+      assert.equal(getViewports().length, 2)
+      assert.equal(getViewports()[1].observers.length, 1)
+      assert.equal(getViewports()[1].observers[0], observer)
+
+      observer = PositionObserver({ container })
+      assert.equal(getViewports().length, 2)
+      assert.equal(getViewports()[1].observers.length, 2)
+      assert.equal(getViewports()[1].observers[1], observer)
+    })
+
+    it('auto activates', () => {
+      let observer = PositionObserver()
+      assert.equal(getViewports().length, 1)
+      assert.equal(getViewports()[0].observers.length, 1)
+      assert.equal(getViewports()[0].observers[0], observer)
 
       observer = PositionObserver({ container: document.createElement('div') })
       assert.equal(getViewports().length, 2)
@@ -163,15 +181,9 @@ describe('viewprt', () => {
     })
 
     it('auto activates (if element exists and in DOM)', () => {
-      let observer = ElementObserver()
-      assert.equal(getViewports().length, 0)
-
       let div = document.createElement('div')
-      observer = ElementObserver(div)
-      assert.equal(getViewports().length, 0)
-
       document.body.appendChild(div)
-      observer = ElementObserver(div)
+      let observer = ElementObserver(div)
       assert.equal(getViewports().length, 1)
       assert.equal(getViewports()[0].observers.length, 1)
       assert.equal(getViewports()[0].observers[0], observer)
@@ -227,15 +239,19 @@ describe('viewprt', () => {
     })
 
     it('can (re)activate', () => {
-      let div = document.createElement('div')
-      let observer = ElementObserver(div)
-      assert.equal(getViewports().length, 0)
-
-      document.body.appendChild(div)
-      observer.activate()
+      let observer = ElementObserver()
       assert.equal(getViewports().length, 1)
       assert.equal(getViewports()[0].observers.length, 1)
-      assert.equal(getViewports()[0].observers[0], observer)
+
+      observer.activate() // doesn't do anything. already activated
+      assert.equal(getViewports().length, 1)
+      assert.equal(getViewports()[0].observers.length, 1)
+
+      observer.destroy()
+      assert.equal(getViewports().length, 0)
+      observer.activate() // re-activated
+      assert.equal(getViewports().length, 1)
+      assert.equal(getViewports()[0].observers.length, 1)
     })
 
     it('auto destroys if no longer DOM', () => {
@@ -248,6 +264,18 @@ describe('viewprt', () => {
       assert.equal(getViewports()[0].observers[0], observer)
 
       document.body.removeChild(div)
+      getViewports()[0].checkObservers()
+      assert.equal(getViewports().length, 0)
+    })
+
+    it('does not auto-destroy if not initiallly in DOM, only when checked', () => {
+      let div = document.createElement('div')
+      let observer = ElementObserver(div)
+
+      assert.equal(getViewports().length, 1)
+      assert.equal(getViewports()[0].observers.length, 1)
+      assert.equal(getViewports()[0].observers[0], observer)
+
       getViewports()[0].checkObservers()
       assert.equal(getViewports().length, 0)
     })

@@ -8,12 +8,12 @@ export function Observer (opts) {
   this.offset = ~~opts.offset || 0
   this.container = opts.container || document.body
   this.once = Boolean(opts.once)
-  this.activate()
+  return this.activate()
 }
 
 Observer.prototype = {
   activate () {
-    addViewportObserver(this)
+    return addViewportObserver(this)
   },
   destroy () {
     removeViewportObserver(this)

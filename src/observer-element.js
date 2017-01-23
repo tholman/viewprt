@@ -9,6 +9,10 @@ function isElementInViewport (element, offset, viewportState) {
          rect.right > 0 - offset
 }
 
+function isElementInDOM (element) {
+  return element && element.parentNode
+}
+
 const ElementObserver = ObserverInterface(function ElementObserver (element, opts = {}) {
   if (!(this instanceof ElementObserver)) {
     return new ElementObserver(...arguments)
@@ -18,13 +22,17 @@ const ElementObserver = ObserverInterface(function ElementObserver (element, opt
   this.onEnter = opts.onEnter
   this.onExit = opts.onExit
   this._didEnter = false
-  Observer.call(this, opts)
+  const viewport = Observer.call(this, opts)
+
+  if (isElementInDOM(element)) {
+    this.check(viewport.getState())
+  }
 })
 
 ElementObserver.prototype.check = function (viewportState) {
   const { onEnter, onExit, element, offset, once, _didEnter } = this
 
-  if (!element || !element.parentNode) {
+  if (!isElementInDOM(element)) {
     this.destroy()
   } else if (onEnter && !_didEnter && isElementInViewport(element, offset, viewportState)) {
     this._didEnter = true
