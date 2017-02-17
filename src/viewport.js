@@ -22,9 +22,12 @@ function Viewport (container) {
 
   element.addEventListener('scroll', handler)
   element.addEventListener('resize', handler)
+
   if (window.MutationObserver) {
-    const mutationObserver = this.mutationObserver = new MutationObserver(handler)
-    mutationObserver.observe(container, { attributes: true, childList: true, subtree: true })
+    addEventListener('DOMContentLoaded', () => {
+      const mutationObserver = this.mutationObserver = new MutationObserver(handler)
+      mutationObserver.observe(container, { attributes: true, childList: true, subtree: true })
+    })
   }
 }
 
