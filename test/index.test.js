@@ -6,14 +6,23 @@ const { PositionObserver, ElementObserver } = viewprt
 const getViewports = viewprt.__get__('getViewports')
 const resetViewports = viewprt.__get__('resetViewports')
 
-// jsdom won't let you set document.body.scrollHeight directly?
+// jsdom won't let you get/set document.body.scrollHeight directly
 let bodyScrollHeight = 0
-Object.defineProperty(document.body, 'scrollHeight', { get: () => bodyScrollHeight })
+Object.defineProperty(document.body, 'scrollHeight', {
+  get: () => bodyScrollHeight,
+  set: (v) => { bodyScrollHeight = v }
+})
 
 describe('viewprt', () => {
+  beforeEach(() => {
+    window.pageYOffset = 0
+    window.innerWidth = 1024
+    window.innerHeight = 768
+    document.body.scrollHeight = 768
+  })
+
   afterEach(() => {
     resetViewports()
-    bodyScrollHeight = 0
   })
 
   describe('options', () => {
@@ -158,10 +167,8 @@ describe('viewprt', () => {
     })
 
     it('does not trigger callbacks when content and container are same size', () => {
-      window.innerWidth = 500
       window.innerHeight = 500
-      window.pageYOffset = 0
-      bodyScrollHeight = 500
+      document.body.scrollHeight = 500
 
       let observer = PositionObserver({
         once: true,
@@ -179,10 +186,9 @@ describe('viewprt', () => {
     })
 
     it('triggers bottom callback if created while at bottom', (done) => {
-      window.innerWidth = 500
-      window.innerHeight = 500
       window.pageYOffset = 300
-      bodyScrollHeight = 800
+      window.innerHeight = 500
+      document.body.scrollHeight = 800
 
       PositionObserver({
         onBottom () {
@@ -212,8 +218,6 @@ describe('viewprt', () => {
     })
 
     it('triggers onEnter if in view on creation', () => {
-      window.innerWidth = 500
-      window.innerHeight = 500
       let div = document.createElement('div')
       div.getBoundingClientRect = () => ({
         top: 10,
@@ -237,8 +241,6 @@ describe('viewprt', () => {
     })
 
     it('respects once option', () => {
-      window.innerWidth = 500
-      window.innerHeight = 500
       let div = document.createElement('div')
       div.getBoundingClientRect = () => ({
         top: 10,
