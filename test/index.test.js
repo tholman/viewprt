@@ -6,9 +6,14 @@ const { PositionObserver, ElementObserver } = viewprt
 const getViewports = viewprt.__get__('getViewports')
 const resetViewports = viewprt.__get__('resetViewports')
 
+// jsdom won't let you set document.body.scrollHeight directly?
+let bodyScrollHeight = 0
+Object.defineProperty(document.body, 'scrollHeight', { get: () => bodyScrollHeight })
+
 describe('viewprt', () => {
   afterEach(() => {
     resetViewports()
+    bodyScrollHeight = 0
   })
 
   describe('options', () => {
@@ -152,11 +157,14 @@ describe('viewprt', () => {
       assert.ok(observer) // still an instance, just not checked
     })
 
-    it('does not trigger onTop or onBottom in initial state', () => {
+    it('does not trigger callbacks when content and container are same size', () => {
       window.innerWidth = 500
       window.innerHeight = 500
+      window.pageYOffset = 0
+      bodyScrollHeight = 500
 
       let observer = PositionObserver({
+        once: true,
         onTop () {
           assert(0)
         },
@@ -168,6 +176,20 @@ describe('viewprt', () => {
       assert.equal(getViewports().length, 1)
       assert.equal(getViewports()[0].observers.length, 1)
       assert.equal(getViewports()[0].observers[0], observer)
+    })
+
+    it('triggers bottom callback if created while at bottom', (done) => {
+      window.innerWidth = 500
+      window.innerHeight = 500
+      window.pageYOffset = 300
+      bodyScrollHeight = 800
+
+      PositionObserver({
+        onBottom () {
+          assert(1)
+          done()
+        }
+      })
     })
   })
 
