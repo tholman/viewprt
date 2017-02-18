@@ -1,10 +1,13 @@
 const assert = require('assert')
 const rewire = require('rewire')
 
-const viewprt = rewire('../dist/viewprt.test.js')
+// User rewire to access private `viewports` array to get/reset state for tests
+const viewprt = rewire('../dist/viewprt.cjs.js')
+const _viewports = viewprt.__get__('viewports')
+const getViewports = () => _viewports.slice()
+const resetViewports = () => (_viewports.length = 0)
+
 const { PositionObserver, ElementObserver } = viewprt
-const getViewports = viewprt.__get__('getViewports')
-const resetViewports = viewprt.__get__('resetViewports')
 
 // jsdom won't let you get/set document.body.scrollHeight directly
 let bodyScrollHeight = 0

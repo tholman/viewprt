@@ -27,9 +27,8 @@
   "scripts": {
     "dev": "rollup --config --watch",
     "build": "rollup --config",
-    "build:test": "rollup --config rollup.config.test.js",
     "lint": "eslint src test --fix",
-    "test:js": "yarn run build:test && mocha --require test/helpers/env.js",
+    "test:js": "yarn build && mocha --require test/helpers/env.js",
     "test": "yarn lint && yarn test:js",
     "prepublish": "yarn build",
     "clean": "rm -rf dist",

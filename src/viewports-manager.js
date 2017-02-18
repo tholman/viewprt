@@ -4,7 +4,7 @@ import Viewport from './viewport'
  * When adding a new observer, the manager checks if the viewport
  * already exists so they share common event listeners.
  */
-let viewports = []
+const viewports = []
 
 export function addViewportObserver (observer) {
   const container = observer.container
@@ -41,12 +41,4 @@ function getViewportIndexForContainer (container) {
       return i
     }
   }
-}
-
-// For testing only (removed via tree-shaking):
-function getViewports () { // eslint-disable-line no-unused-vars
-  return viewports.slice()
-}
-function resetViewports () { // eslint-disable-line no-unused-vars
-  viewports = []
 }

@@ -9,6 +9,9 @@ export default {
   }, {
     dest: 'dist/viewprt.es.js',
     format: 'es'
+  }, {
+    dest: 'dist/viewprt.cjs.js',
+    format: 'cjs'
   }],
   plugins: [
     babel({
