@@ -3,9 +3,9 @@ import { Observer, ObserverInterface } from './observer-interface'
 function isElementInViewport (element, offset, viewportState) {
   const rect = element.getBoundingClientRect()
   return !!(rect.width && rect.height) &&
-         rect.top < viewportState.h + offset &&
+         rect.top < viewportState.height + offset &&
          rect.bottom > 0 - offset &&
-         rect.left < viewportState.w + offset &&
+         rect.left < viewportState.width + offset &&
          rect.right > 0 - offset
 }
 
@@ -36,11 +36,11 @@ ElementObserver.prototype.check = function (viewportState) {
     this.destroy()
   } else if (onEnter && !_didEnter && isElementInViewport(element, offset, viewportState)) {
     this._didEnter = true
-    onEnter.call(this, element)
+    onEnter.call(this, element, viewportState)
     once && this.destroy()
   } else if (onExit && _didEnter && !isElementInViewport(element, offset, viewportState)) {
     this._didEnter = false
-    onExit.call(this, element)
+    onExit.call(this, element, viewportState)
     once && this.destroy()
   }
 }
