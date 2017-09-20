@@ -169,7 +169,7 @@ describe('viewprt', () => {
       assert.ok(observer) // still an instance, just not checked
     })
 
-    it('does not trigger callbacks when content and container are same size', () => {
+    it('triggers maximized but not top/bottom callbacks when content and container are same size', (done) => {
       window.innerHeight = 500
       document.body.scrollHeight = 500
 
@@ -180,6 +180,10 @@ describe('viewprt', () => {
         },
         onBottom () {
           assert(0)
+        },
+        onMaximized () {
+          assert(1)
+          done()
         }
       })
 

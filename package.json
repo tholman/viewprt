@@ -1,6 +1,6 @@
 {
   "name": "viewprt",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "tiny, high performance viewport position & intersection observer",
   "author": "Garth Poitras <garth22@gmail.com>",
   "license": "MIT",
@@ -22,7 +22,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gdub22/viewprt.git"
+    "url": "git+https://github.com/gpoitch/viewprt.git"
   },
   "scripts": {
     "dev": "rollup --config --watch",

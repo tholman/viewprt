@@ -1,8 +1,8 @@
-# viewprt [![Build Status](https://travis-ci.org/gdub22/viewprt.svg)](https://travis-ci.org/gdub22/viewprt)
+# viewprt [![Build Status](https://travis-ci.org/gpoitch/viewprt.svg)](https://travis-ci.org/gpoitch/viewprt)
 
 A tiny, high performance viewport position & intersection observation tool.  You can watch when elements enter & exit the viewport, or when the viewport itself is at the bottom or top.  Use this as a building block for things such as lazy loaders, infinite scrollers, etc.
 
-#### [Demo](https://rawgit.com/gdub22/viewprt/master/demos/index.html)  
+#### [Demo](https://rawgit.com/gpoitch/viewprt/master/demos/index.html)  
 #### [Dist](https://unpkg.com/viewprt/dist/)
 
 ### Install
@@ -31,11 +31,12 @@ const elementObserver = ElementObserver(element, {
 // Observe when the viewport reaches its bounds:
 const positionObserver = PositionObserver({
   // options (defaults)
-  container: document.body,               // the viewport container element
-  offset: 0,                              // offset from the edge of the viewport in pixels
-  once: false,                            // if true, observer is detroyed after first callback is triggered
-  onBottom (container, viewportState) {}, // callback when the viewport reaches the bottom
-  onTop (container, viewportState) {}     // callback when the viewport reaches the top
+  container: document.body,                 // the viewport container element
+  offset: 0,                                // offset from the edge of the viewport in pixels
+  once: false,                              // if true, observer is detroyed after first callback is triggered
+  onBottom (container, viewportState) {},   // callback when the viewport reaches the bottom
+  onTop (container, viewportState) {},      // callback when the viewport reaches the top
+  onMaximized (container, viewportState) {} // callback when the viewport and container are the same size
 })
 
 // Stop observing:
