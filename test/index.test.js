@@ -226,7 +226,7 @@ describe('viewprt', () => {
       assert.equal(getViewports()[0].observers[0], observer)
     })
 
-    it('triggers onEnter if in view on creation', () => {
+    it('triggers onEnter if in view on creation', done => {
       const div = document.createElement('div')
       div.getBoundingClientRect = () => ({
         top: 10,
@@ -241,6 +241,7 @@ describe('viewprt', () => {
       const observer = ElementObserver(div, {
         onEnter() {
           assert(1)
+          done()
         }
       })
 
@@ -249,7 +250,85 @@ describe('viewprt', () => {
       assert.equal(getViewports()[0].observers[0], observer)
     })
 
-    it('respects once option', () => {
+    it('triggers onEnter/onExit', done => {
+      const div = document.createElement('div')
+      const rect = {
+        top: 2000,
+        left: 10,
+        bottom: 10,
+        right: 10,
+        width: 10,
+        height: 10
+      }
+      div.getBoundingClientRect = () => rect
+
+      let called = 0
+      function checkDone() {
+        called++
+        called === 2 && done()
+      }
+
+      document.body.appendChild(div)
+      ElementObserver(div, {
+        onEnter() {
+          assert(1)
+          checkDone()
+        },
+        onExit() {
+          assert(1)
+          checkDone()
+        }
+      })
+
+      window.pageYOffset = 2000
+      div.getBoundingClientRect = () => ({ ...rect, top: 0 })
+      getViewports()[0].checkObservers(getViewports()[0].getState())
+
+      window.pageYOffset = 2010
+      div.getBoundingClientRect = () => ({ ...rect, top: -10, bottom: 0 })
+      getViewports()[0].checkObservers(getViewports()[0].getState())
+    })
+
+    it('can trigger onEnter multiple times without an onExit callback', done => {
+      const div = document.createElement('div')
+      const rect = {
+        top: 2000,
+        left: 10,
+        bottom: 10,
+        right: 10,
+        width: 10,
+        height: 10
+      }
+      div.getBoundingClientRect = () => rect
+
+      let called = 0
+      function checkDone() {
+        called++
+        called === 2 && done()
+      }
+
+      document.body.appendChild(div)
+      ElementObserver(div, {
+        onEnter() {
+          assert(1)
+          checkDone()
+        }
+      })
+
+      window.pageYOffset = 2000
+      div.getBoundingClientRect = () => ({ ...rect, top: 0 })
+      getViewports()[0].checkObservers(getViewports()[0].getState())
+
+      window.pageYOffset = 2010
+      div.getBoundingClientRect = () => ({ ...rect, top: -10, bottom: 0 })
+      getViewports()[0].checkObservers(getViewports()[0].getState())
+
+      window.pageYOffset = 2000
+      div.getBoundingClientRect = () => ({ ...rect, top: 0 })
+      getViewports()[0].checkObservers(getViewports()[0].getState())
+    })
+
+    it('respects once option', done => {
       const div = document.createElement('div')
       div.getBoundingClientRect = () => ({
         top: 10,
@@ -265,10 +344,12 @@ describe('viewprt', () => {
         once: true,
         onEnter() {
           assert(1)
+          setTimeout(() => {
+            assert.equal(getViewports().length, 0)
+            done()
+          })
         }
       })
-
-      assert.equal(getViewports().length, 0)
     })
 
     it('can (re)activate', () => {
