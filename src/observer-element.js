@@ -33,17 +33,23 @@ const ElementObserver = ObserverInterface(function ElementObserver(element, opts
 
 ElementObserver.prototype.check = function(viewportState) {
   const { onEnter, onExit, element, offset, once, _didEnter } = this
-
   if (!isElementInDOM(element)) {
-    this.destroy()
-  } else if (onEnter && !_didEnter && isElementInViewport(element, offset, viewportState)) {
+    return this.destroy()
+  }
+
+  const inViewport = isElementInViewport(element, offset, viewportState)
+  if (!_didEnter && inViewport) {
     this._didEnter = true
-    onEnter.call(this, element, viewportState)
-    once && this.destroy()
-  } else if (onExit && _didEnter && !isElementInViewport(element, offset, viewportState)) {
+    if (onEnter) {
+      onEnter.call(this, element, viewportState)
+      once && this.destroy()
+    }
+  } else if (_didEnter && !inViewport) {
     this._didEnter = false
-    onExit.call(this, element, viewportState)
-    once && this.destroy()
+    if (onExit) {
+      onExit.call(this, element, viewportState)
+      once && this.destroy()
+    }
   }
 }
 
