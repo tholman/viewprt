@@ -1,6 +1,6 @@
 {
   "name": "viewprt",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Tiny, high performance viewport position & intersection observer",
   "author": "Garth Poitras <garth22@gmail.com>",
   "license": "MIT",
@@ -37,9 +37,9 @@
     "demo": "open demos/index.html"
   },
   "devDependencies": {
-    "flt": "^0.2.2",
-    "jsdom": "^11.6.1",
-    "microbundle": "^0.4.3",
-    "rewire": "^3.0.2"
+    "flt": "^0.3.0",
+    "jsdom": "^11.11.0",
+    "microbundle": "^0.4.4",
+    "rewire": "^4.0.1"
   }
 }

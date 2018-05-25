@@ -1,15 +1,13 @@
 # viewprt [![Build Status](https://travis-ci.org/gpoitch/viewprt.svg)](https://travis-ci.org/gpoitch/viewprt)
 
-A tiny, high performance viewport position & intersection observation tool. You can watch when elements enter & exit the viewport, or when the viewport itself is at the bottom or top. Use this as a building block for things such as lazy loaders, infinite scrollers, etc.
+A tiny, high performance viewport position & intersection observation tool. You can watch when elements enter & exit the viewport, or when a viewport itself is at the bottom, top, left or right. Use this as a building block for things such as lazy loaders, infinite scrollers, etc.
 
 #### [Demo](https://rawgit.com/gpoitch/viewprt/master/demos/index.html)
-
-#### [Dist](https://unpkg.com/viewprt/dist/)
 
 ### Install
 
 ```bash
-npm i viewprt
+npm install viewprt --save
 ```
 
 ### API
@@ -19,10 +17,8 @@ Create new observers and any time its container is scrolled, resized, or mutated
 ```js
 import { PositionObserver, ElementObserver } from 'viewprt'
 
-const element = document.getElementById('element')
-
 // Observe when an element enters and exits the viewport:
-const elementObserver = ElementObserver(element, {
+const elementObserver = ElementObserver(document.getElementById('element'), {
   // options (defaults)
   container: document.body, // the viewport container element
   offset: 0, // offset from the edge of the viewport in pixels
@@ -44,9 +40,21 @@ const positionObserver = PositionObserver({
   onMaximized(container, viewportState) {} // callback when the viewport and container are the same size
 })
 
+// The `viewportState` is an object containing information like:
+/*
+{
+  width: 1024,
+  height: 768,
+  positionX: 0,
+  positionY: 2000
+  directionY: "down",
+  directionX: "none"
+}
+*/
+
 // Stop observing:
 positionObserver.destroy()
-elementObserver.destroy() // This happens automatically if the element is removed from DOM
+elementObserver.destroy() // This happens automatically if the element is removed from the DOM
 
 // Start observing again:
 positionObserver.activate()
